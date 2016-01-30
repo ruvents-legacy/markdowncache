@@ -1,0 +1,21 @@
+{
+  "name": "vudaltsov/markdowncache",
+  "description": "A simple tool for caching Markdown contents",
+  "type": "library",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Valentin Udaltsov",
+      "email": "udaltsov.valentin@gmail.com",
+      "role": "Developer"
+    }
+  ],
+  "autoload": {
+    "psr-4": {
+      "Vudaltsov\\MarkdownCache\\": ""
+    }
+  },
+  "require": {
+    "erusev/parsedown": "^1.6"
+  }
+}
