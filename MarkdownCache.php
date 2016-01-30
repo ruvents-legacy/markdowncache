@@ -4,6 +4,8 @@ namespace Vudaltsov\MarkdownCache;
 
 /**
  * Class MarkdownCache
+ *
+ * @package Vudaltsov\MarkdownCache
  */
 class MarkdownCache
 {
@@ -43,17 +45,17 @@ class MarkdownCache
      */
     public function __construct($cacheDir)
     {
-        $this->cacheDir = $cacheDir;
+        $this->setCacheDir($cacheDir);
     }
 
     /**
-     * @param string $path
+     * @param string $mdPath
      *
      * @return string
      */
-    protected function getCachePath($path)
+    protected function getCachePath($mdPath)
     {
-        return $this->cacheDir.'/'.md5($path).'.'.self::CACHE_EXT;
+        return $this->cacheDir.'/'.md5($mdPath).'.'.self::CACHE_EXT;
     }
 
     /**
@@ -74,9 +76,14 @@ class MarkdownCache
      * @param string $cacheDir
      *
      * @return $this
+     * @throws MarkdownCacheException
      */
     public function setCacheDir($cacheDir)
     {
+        if (!is_writable($cacheDir)) {
+            throw new MarkdownCacheException("$cacheDir doesn't exist or is not writable");
+        }
+
         $this->cacheDir = $cacheDir;
 
         return $this;
@@ -98,23 +105,23 @@ class MarkdownCache
      * Performs parsing and caching
      * Returns path or html depending on $returnType
      *
-     * @param string $sourcePath
+     * @param string $mdPath
      * @param int    $returnType
      *
      * @return string
      * @throws MarkdownCacheException
      */
-    public function get($sourcePath, $returnType = self::RETURN_PATH)
+    public function get($mdPath, $returnType = self::RETURN_PATH)
     {
-        if (!file_exists($sourcePath)) {
-            throw new MarkdownCacheException("File $sourcePath doesn't exist");
+        if (!file_exists($mdPath)) {
+            throw new MarkdownCacheException("File $mdPath doesn't exist");
         }
 
-        $cachePath = $this->getCachePath($sourcePath);
+        $cachePath = $this->getCachePath($mdPath);
 
         // no cache found
-        if (!file_exists($cachePath) || filemtime($cachePath) < filemtime($sourcePath)) {
-            $mdContent = file_get_contents($sourcePath);
+        if (!file_exists($cachePath) || filemtime($cachePath) < filemtime($mdPath)) {
+            $mdContent = file_get_contents($mdPath);
             $htmlContent = $this->getParsedown()->text($mdContent);
             $this->putCache($cachePath, $htmlContent);
 
@@ -133,37 +140,37 @@ class MarkdownCache
     }
 
     /**
-     * Returns path of a parsed and cached md file
+     * Returns the path of the parsed and cached html version of md file
      *
-     * @param $path
+     * @param $mdPath
      *
      * @return string
      */
-    public function getPath($path)
+    public function getPath($mdPath)
     {
-        return $this->get($path, self::RETURN_PATH);
+        return $this->get($mdPath, self::RETURN_PATH);
     }
 
     /**
-     * Returns html code of a parsed and cached md file
+     * Returns html code of the parsed and cached md file
      *
-     * @param $path
+     * @param $mdPath
      *
      * @return string
      */
-    public function getHtml($path)
+    public function getHtml($mdPath)
     {
-        return $this->get($path, self::RETURN_HTML);
+        return $this->get($mdPath, self::RETURN_HTML);
     }
 
     /**
      * Renders md file
      *
-     * @param $path
+     * @param $mdPath
      */
-    public function render($path)
+    public function render($mdPath)
     {
-        include $this->get($path, self::RETURN_PATH);
+        include $this->get($mdPath, self::RETURN_PATH);
     }
 
     /**
