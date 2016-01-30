@@ -1,6 +1,6 @@
 {
   "name": "vudaltsov/markdowncache",
-  "description": "A simple tool for caching Markdown contents",
+  "description": "A simple tool for caching markdown files",
   "type": "library",
   "license": "MIT",
   "authors": [
